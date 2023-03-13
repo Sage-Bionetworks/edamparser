@@ -1,0 +1,34 @@
+---
+title: "EDAM Tools Parsing"
+format: html
+editor: visual
+---
+
+## Quarto
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+edam_all <- readr::read_tsv("EDAM.tsv") %>% 
+  janitor::clean_names()
+```
+
+```{r}
+edam_ops <- edam_all %>% 
+  dplyr::filter(parents == "http://edamontology.org/operation_0004") %>% 
+  dplyr::select(class_id, preferred_label, synonyms, definitions)
+
+ops_classes <- edam_ops %>% 
+  purrr::pluck("class_id") %>% 
+  unique()
+```
+
+```{r}
+edam_ops_level2 <- edam_all %>% 
+  dplyr::filter(parents %in% ops_classes) %>% 
+  dplyr::select(class_id, preferred_label, synonyms, definitions, parents) %>% 
+  dplyr::left_join(dplyr::rename_all(edam_ops, ~ stringr::str_c("parent_", .)),
+                   by = c("parents" = "parent_class_id"))
+```
