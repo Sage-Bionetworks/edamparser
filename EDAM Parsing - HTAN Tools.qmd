@@ -32,3 +32,7 @@ edam_ops_level2 <- edam_all %>%
   dplyr::left_join(dplyr::rename_all(edam_ops, ~ stringr::str_c("parent_", .)),
                    by = c("parents" = "parent_class_id"))
 ```
+
+```{r}
+paste0( edam_ops$preferred_label, collapse=", ")
+```
