@@ -32,3 +32,22 @@ edam_ops_level2 <- edam_all %>%
   dplyr::left_join(dplyr::rename_all(edam_ops, ~ stringr::str_c("parent_", .)),
                    by = c("parents" = "parent_class_id"))
 ```
+
+
+```{r}
+edam_topics <- edam_all %>% 
+  dplyr::filter(parents == "http://edamontology.org/topic_0003") %>% 
+  dplyr::select(class_id, preferred_label, synonyms, definitions)
+
+topics_classes <- edam_topics %>% 
+  purrr::pluck("class_id") %>% 
+  unique()
+```
+
+```{r}
+edam_topics_level2 <- edam_all %>% 
+  dplyr::filter(parents %in% topics_classes) %>% 
+  dplyr::select(class_id, preferred_label, synonyms, definitions, parents) %>% 
+  dplyr::left_join(dplyr::rename_all(edam_topics, ~ stringr::str_c("parent_", .)),
+                   by = c("parents" = "parent_class_id"))
+```
